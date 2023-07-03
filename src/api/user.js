@@ -25,14 +25,15 @@ export function getUserInfo(accessToken) {
 
 export function logout() {
   return request({
-    url: '/logout',
+    url: 'users/logout',
     method: 'post',
   })
 }
 
-export function register() {
+export function register(data) {
   return request({
-    url: '/register',
+    url: '/users/register',
     method: 'post',
+    data,
   })
 }

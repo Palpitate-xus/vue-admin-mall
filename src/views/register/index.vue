@@ -24,14 +24,38 @@
               <vab-icon slot="prefix" :icon="['fas', 'user-alt']"></vab-icon>
             </el-input>
           </el-form-item>
-          <el-form-item prop="phone">
+          <el-form-item prop="supplier_name">
+            <el-input
+              v-model.trim="form.supplier_name"
+              v-focus
+              auto-complete="off"
+              placeholder="请输入供应商名称"
+              style="margin-top: 20px"
+              type="text"
+            >
+              <vab-icon slot="prefix" :icon="['fas', 'user-alt']"></vab-icon>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="supplier_address">
+            <el-input
+              v-model.trim="form.supplier_address"
+              v-focus
+              auto-complete="off"
+              placeholder="请输入供应商地址"
+              style="margin-top: 20px"
+              type="text"
+            >
+              <vab-icon slot="prefix" :icon="['fas', 'user-alt']"></vab-icon>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="email">
             <el-input
               v-model.trim="form.email"
               autocomplete="off"
               placeholder="请输入邮箱"
               type="text"
             >
-              <vab-icon slot="prefix" :icon="['fas', 'mobile-alt']"></vab-icon>
+              <vab-icon slot="prefix" :icon="['fas', 'mail-bulk']"></vab-icon>
             </el-input>
           </el-form-item>
           <el-form-item prop="phoneCode" style="position: relative">
@@ -68,7 +92,7 @@
             <el-button
               class="register-btn"
               type="primary"
-              @click.native.prevent="handleReister"
+              @click="handleReister"
             >
               注册
             </el-button>
@@ -109,13 +133,6 @@
           callback()
         }
       }
-      const validatePhone = (rule, value, callback) => {
-        if (!isPhone(value)) {
-          callback(new Error('请输入正确的手机号'))
-        } else {
-          callback()
-        }
-      }
       return {
         isGetphone: false,
         getPhoneIntval: null,
@@ -130,7 +147,7 @@
             { max: 20, trigger: 'blur', message: '最多不能超过20个字' },
             { validator: validateusername, trigger: 'blur' },
           ],
-          phone: [
+          email: [
             { required: true, trigger: 'blur', message: '请输入邮箱' },
             { type: 'email', message: '邮箱格式错误', trigger: 'blur' },
           ],
@@ -140,6 +157,12 @@
           ],
           phoneCode: [
             { required: true, trigger: 'blur', message: '请输入邮箱验证码' },
+          ],
+          supplier_name: [
+            { required: true, trigger: 'blur', message: '请输入供应商名称' },
+          ],
+          supplier_address: [
+            { required: true, trigger: 'blur', message: '请输入供应商地址' },
           ],
         },
         loading: false,
@@ -156,12 +179,8 @@
     },
     methods: {
       getPhoneCode() {
-        if (!isPhone(this.form.phone)) {
-          //this.$baseMessage('请输入手机号', 'error')
-          this.$refs['registerForm'].validateField('phone')
-          return
-        }
         this.isGetphone = true
+        this.$baseMessage('验证码为6666')
         let n = 60
         this.getPhoneIntval = setInterval(() => {
           if (n > 0) {
@@ -175,19 +194,20 @@
           }
         }, 1000)
       },
-      handleReister() {
-        this.$refs['registerForm'].validate(async (valid) => {
-          if (valid) {
-            const param = {
-              username: this.form.username,
-              phone: this.form.phone,
-              password: this.form.password,
-              phoneCode: this.form.phoneCode,
-            }
-            const { msg } = await register(param)
-            this.$baseMessage(msg, 'success')
-          }
-        })
+      async handleReister() {
+        const param = {
+          username: this.form.username,
+          email: this.form.email,
+          password: this.form.password,
+          // phoneCode: this.form.phoneCode,
+          supplier_address: this.form.supplier_address,
+          supplier_name: this.form.supplier_name,
+          user_type: 'supplier',
+        }
+        console.log(param)
+        const { message } = await register(param)
+        this.$baseMessage(message, 'success')
+        this.$router.push('/login')
       },
     },
   }
