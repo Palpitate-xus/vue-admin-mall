@@ -8,12 +8,12 @@
     >
       <el-table-column
         label="id"
-        prop="product_id"
+        prop="supplyorder_id"
         show-overflow-tooltip
       ></el-table-column>
       <el-table-column
         label="订单ID"
-        prop="supplierorder_id"
+        prop="supplyorder_id"
         show-overflow-tooltip
       ></el-table-column>
       <el-table-column
@@ -49,8 +49,8 @@
 </template>
 
 <script>
-  import { getList, offshelf, onshelf } from '@/api/productsManagement'
-
+  import { offshelf, onshelf } from '@/api/productsManagement'
+  import { getList } from '@/api/orderManagement'
   export default {
     name: 'OrdersManagement',
     data() {
@@ -125,7 +125,7 @@
       async fetchData() {
         this.listLoading = true
         const { data, totalCount } = await getList(this.queryForm)
-        this.list = data.products
+        this.list = data.supplier_orders
         this.total = totalCount
         setTimeout(() => {
           this.listLoading = false
