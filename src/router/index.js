@@ -340,6 +340,25 @@ export const asyncRoutes = [
     ],
   },
   {
+    path: '/orders',
+    component: Layout,
+    redirect: 'noRedirect',
+    name: 'Orders',
+    meta: {
+      title: '订单管理',
+      icon: 'shopping-cart',
+      permissions: ['supplier'],
+    },
+    children: [
+      {
+        path: '/ordersManagement',
+        name: 'OrdersManagement',
+        component: () => import('@/views/ordersManagement/index'),
+        meta: { title: '订单管理', icon: 'truck' },
+      },
+    ],
+  },
+  {
     path: '/error',
     component: EmptyLayout,
     redirect: 'noRedirect',
