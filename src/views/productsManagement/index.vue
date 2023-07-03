@@ -3,10 +3,9 @@
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
         <el-button
-          v-permission="supplier"
+          v-permissions="'[supplier]'"
           icon="el-icon-plus"
           type="primary"
-          @click="handleEdit"
         >
           添加
         </el-button>
@@ -80,7 +79,15 @@
       <el-table-column label="操作" show-overflow-tooltip width="200">
         <template #default="{ row }">
           <!-- <el-button type="text" @click="handleEdit(row)">编辑</el-button> -->
-          <el-button type="text" @click="handleDelete(row)">下架</el-button>
+          <el-button
+            v-if="row.product_status === 'active'"
+            plain
+            type="danger"
+            @click="handleDelete(row)"
+          >
+            下架
+          </el-button>
+          <el-button v-else plain @click="handleOnShelf(row)">上架</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -97,7 +104,7 @@
 </template>
 
 <script>
-  import { getList, offshelf } from '@/api/productsManagement'
+  import { getList, offshelf, onshelf } from '@/api/productsManagement'
 
   export default {
     name: 'ProductsManagement',
@@ -130,7 +137,7 @@
       //     this.$refs['edit'].showEdit()
       //   }
       // },
-      handleDelete(row) {
+      async handleDelete(row) {
         if (row.product_id) {
           this.$baseConfirm('你确定要下架当前项吗', null, async () => {
             const { message } = await offshelf({ product_id: row.product_id })
@@ -150,6 +157,13 @@
             return false
           }
         }
+      },
+      async handleOnShelf(item) {
+        this.$baseConfirm('你确定要上架选中项吗', null, async () => {
+          const { message } = await onshelf({ product_id: item.product_id })
+          this.$baseMessage(message, 'success')
+          this.fetchData()
+        })
       },
       handleSizeChange(val) {
         this.queryForm.pageSize = val
