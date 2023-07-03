@@ -2,13 +2,26 @@
   <div class="userManagement-container">
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
-        <el-button
-          v-permissions="'[supplier]'"
-          icon="el-icon-plus"
-          type="primary"
+        <el-upload
+          accept=".xlsx"
+          action="https://jsonplaceholder.typicode.com/posts/"
+          :before-remove="beforeRemove"
+          :file-list="fileList"
+          :limit="1"
+          multiple
+          :on-exceed="handleExceed"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
         >
-          添加
-        </el-button>
+          <el-button
+            v-permissions="'[supplier]'"
+            icon="el-icon-plus"
+            type="primary"
+          >
+            添加
+          </el-button>
+          <div slot="tip" class="el-upload__tip">只能上传xlsx文件</div>
+        </el-upload>
       </vab-query-form-left-panel>
       <vab-query-form-right-panel :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>
@@ -16,7 +29,7 @@
             <el-input
               v-model.trim="queryForm.username"
               clearable
-              placeholder="请输入用户名"
+              placeholder="请输入商品名称"
             />
           </el-form-item>
           <el-form-item>
@@ -110,6 +123,7 @@
     name: 'ProductsManagement',
     data() {
       return {
+        fileList: [],
         list: null,
         listLoading: true,
         layout: 'total, sizes, prev, pager, next, jumper',
@@ -127,6 +141,22 @@
       this.fetchData()
     },
     methods: {
+      handleRemove(file, fileList) {
+        console.log(file, fileList)
+      },
+      handlePreview(file) {
+        console.log(file)
+      },
+      handleExceed(files, fileList) {
+        this.$message.warning(
+          `当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
+            files.length + fileList.length
+          } 个文件`
+        )
+      },
+      beforeRemove(file, fileList) {
+        return this.$confirm(`确定移除 ${file.name}？`)
+      },
       setSelectRows(val) {
         this.selectRows = val
       },
