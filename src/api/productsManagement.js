@@ -15,3 +15,11 @@ export function offshelf(data) {
     data,
   })
 }
+
+export function onshelf(data) {
+  return request({
+    url: '/store/onshelf/',
+    method: 'post',
+    data,
+  })
+}
