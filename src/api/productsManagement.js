@@ -23,3 +23,19 @@ export function onshelf(data) {
     data,
   })
 }
+
+export function remove(data) {
+  return request({
+    url: '/store/delete_product/',
+    method: 'post',
+    data,
+  })
+}
+
+export function addProduct(data) {
+  return request({
+    url: '/store/insert_product/',
+    method: 'post',
+    data,
+  })
+}
