@@ -7,3 +7,11 @@ export function getList(data) {
     data,
   })
 }
+
+export function getOrderDetail(data) {
+  return request({
+    url: 'suppplier/get_order_details',
+    method: 'post',
+    data,
+  })
+}
