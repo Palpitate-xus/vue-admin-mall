@@ -15,3 +15,11 @@ export function getOrderDetail(data) {
     data,
   })
 }
+
+export function acceptOrder(data) {
+  return request({
+    url: 'supplier/accept_order',
+    method: 'post',
+    data,
+  })
+}
