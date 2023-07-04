@@ -7,20 +7,19 @@
       @selection-change="setSelectRows"
     >
       <el-table-column
-        label="id"
-        prop="supplyorder_id"
-        show-overflow-tooltip
-      ></el-table-column>
-      <el-table-column
         label="订单ID"
         prop="supplyorder_id"
         show-overflow-tooltip
       ></el-table-column>
-      <el-table-column
-        label="订单状态"
-        prop="order_status"
-        show-overflow-tooltip
-      ></el-table-column>
+      <el-table-column label="订单状态" show-overflow-tooltip>
+        <template #default="{ row }">
+          <el-tag
+            :type="row.order_status === 'Pending' ? 'warning' : 'success'"
+          >
+            {{ row.order_status === 'Pending' ? '待处理' : '已发货' }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column
         label="下单时间"
         prop="order_time"
@@ -28,11 +27,8 @@
       ></el-table-column>
       <el-table-column label="操作" show-overflow-tooltip width="200">
         <template #default="{ row }">
-          <!-- <el-button type="text" @click="handleEdit(row)">编辑</el-button> -->
-          <el-button plain type="danger" @click="handleDelete(row)">
-            接受订单
-          </el-button>
-          <el-button plain @click="handleOnShelf(row)">拒绝订单</el-button>
+          <el-button plain @click="viewOrder(row)">查看详情</el-button>
+          <el-button plain @click="handleAccept(row)">接受订单</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -45,12 +41,30 @@
       @current-change="handleCurrentChange"
       @size-change="handleSizeChange"
     ></el-pagination>
+    <el-dialog
+      :close-on-click-modal="false"
+      title="订单详情"
+      :visible="dialogVisible"
+      @close="closeDialog"
+    >
+      <el-table border :data="orderItems">
+        <el-table-column label="商品ID" prop="product_id"></el-table-column>
+        <el-table-column label="商品名称" prop="product_name"></el-table-column>
+        <el-table-column
+          label="商品价格"
+          prop="product_price"
+        ></el-table-column>
+        <el-table-column label="购买数量" prop="quantity"></el-table-column>
+      </el-table>
+      <div v-if="orderItems.length === 0" class="no-items-message">
+        <el-empty>订单中没有商品</el-empty>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-  import { offshelf, onshelf } from '@/api/productsManagement'
-  import { getList } from '@/api/orderManagement'
+  import { getList, getOrderDetail, acceptOrder } from '@/api/orderManagement'
   export default {
     name: 'OrdersManagement',
     data() {
@@ -60,7 +74,9 @@
         layout: 'total, sizes, prev, pager, next, jumper',
         total: 0,
         selectRows: '',
+        dialogVisible: false,
         elementLoadingText: '正在加载...',
+        orderItems: [],
         queryForm: {
           pageNo: 1,
           pageSize: 10,
@@ -75,40 +91,23 @@
       setSelectRows(val) {
         this.selectRows = val
       },
-      // handleEdit(row) {
-      //   if (row.id) {
-      //     this.$refs['edit'].showEdit(row)
-      //   } else {
-      //     this.$refs['edit'].showEdit()
-      //   }
-      // },
-      async handleDelete(row) {
-        if (row.product_id) {
-          this.$baseConfirm('你确定要下架当前项吗', null, async () => {
-            const { message } = await offshelf({ product_id: row.product_id })
-            this.$baseMessage(message, 'success')
-            this.fetchData()
+      async handleAccept(item) {
+        this.$baseConfirm('你确定要接受订单并发货吗', null, async () => {
+          console.log(item.supplyorder_id)
+          const { message } = await acceptOrder({
+            supplyorder_id: item.supplyorder_id,
           })
-        } else {
-          if (this.selectRows.length > 0) {
-            const ids = this.selectRows.map((item) => item.id).join()
-            this.$baseConfirm('你确定要下架选中项吗', null, async () => {
-              const { msg } = await doDelete({ ids })
-              this.$baseMessage(msg, 'success')
-              this.fetchData()
-            })
-          } else {
-            this.$baseMessage('未选中任何行', 'error')
-            return false
-          }
-        }
-      },
-      async handleOnShelf(item) {
-        this.$baseConfirm('你确定要上架选中项吗', null, async () => {
-          const { message } = await onshelf({ product_id: item.product_id })
-          this.$baseMessage(message, 'success')
           this.fetchData()
+          this.$baseMessage(message, 'success')
         })
+      },
+      async viewOrder(item) {
+        console.log(item.supplyorder_id)
+        const data = await getOrderDetail({
+          supplyorder_id: item.supplyorder_id,
+        })
+        this.orderItems = data.data.orderdetails
+        this.dialogVisible = true
       },
       handleSizeChange(val) {
         this.queryForm.pageSize = val
@@ -130,6 +129,9 @@
         setTimeout(() => {
           this.listLoading = false
         }, 300)
+      },
+      closeDialog() {
+        this.dialogVisible = false
       },
     },
   }
