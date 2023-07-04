@@ -4,12 +4,12 @@
       <el-col :lg="6" :md="12" :sm="24" :xl="6" :xs="24">
         <el-card shadow="never">
           <div slot="header">
-            <span>访问量</span>
+            <span>营业额</span>
           </div>
           <vab-chart autoresize :option="fwl" />
           <div class="bottom">
             <span>
-              日均访问量:
+              日均营业额:
 
               {{ config1.endVal }}
             </span>
@@ -19,42 +19,22 @@
       <el-col :lg="6" :md="12" :sm="24" :xl="6" :xs="24">
         <el-card shadow="never">
           <div slot="header">
-            <span>授权数</span>
+            <span>订单量</span>
           </div>
           <vab-chart autoresize :option="sqs" />
           <div class="bottom">
             <span>
-              总授权数:
+              总订单量:
               {{ config2.endVal }}
             </span>
           </div>
         </el-card>
       </el-col>
 
-      <el-col
-        v-for="(item, index) in iconList"
-        :key="index"
-        :lg="3"
-        :md="3"
-        :sm="6"
-        :xl="3"
-        :xs="12"
-      >
-        <router-link target="_blank" :to="item.link">
-          <el-card class="icon-panel" shadow="never">
-            <vab-icon
-              :icon="['fas', item.icon]"
-              :style="{ color: item.color }"
-            ></vab-icon>
-            <p>{{ item.title }}</p>
-          </el-card>
-        </router-link>
-      </el-col>
-
       <el-col :lg="13" :md="13" :sm="24" :xl="13" :xs="24">
         <el-card class="card" shadow="never">
           <div slot="header">
-            <span>更新日志</span>
+            <span>最新订单</span>
           </div>
           <el-timeline :reverse="reverse">
             <el-timeline-item
@@ -94,7 +74,7 @@
           startVal: 0,
           endVal: this.$baseLodash.random(20000, 60000),
           decimals: 0,
-          prefix: '',
+          prefix: '111',
           suffix: '',
           separator: ',',
           duration: 8000,
@@ -118,7 +98,7 @@
           duration: 8000,
         },
 
-        //访问量
+        //营业额
         fwl: {
           color: [
             '#1890FF',
@@ -153,7 +133,7 @@
           ],
           series: [
             {
-              name: '访问量',
+              name: '营业额',
               type: 'line',
               data: [],
               smooth: true,
@@ -161,7 +141,7 @@
             },
           ],
         },
-        //授权数
+        //订单量
         sqs: {
           color: [
             '#1890FF',
@@ -196,7 +176,7 @@
           ],
           series: [
             {
-              name: '授权数',
+              name: '订单量',
               type: 'bar',
               barWidth: '60%',
               data: [10, 52, 20, 33, 39, 33, 22],
@@ -344,58 +324,6 @@
         noticeList: [],
         //其他信息
         userAgent: navigator.userAgent,
-        //卡片图标
-        iconList: [
-          {
-            icon: 'video',
-            title: '视频播放器',
-            link: '/vab/player',
-            color: '#ffc069',
-          },
-          {
-            icon: 'table',
-            title: '表格',
-            link: '/vab/table/comprehensiveTable',
-            color: '#5cdbd3',
-          },
-          {
-            icon: 'laptop-code',
-            title: '源码',
-            link: 'https://github.com/chuzhixin/vue-admin-better',
-            color: '#b37feb',
-          },
-          {
-            icon: 'book',
-            title: '书籍',
-            link: '',
-            color: '#69c0ff',
-          },
-          {
-            icon: 'bullhorn',
-            title: '公告',
-            link: '',
-            color: '#ff85c0',
-          },
-          {
-            icon: 'gift',
-            title: '礼物',
-            link: '',
-            color: '#ffd666',
-          },
-
-          {
-            icon: 'balance-scale-left',
-            title: '公平的世界',
-            link: '',
-            color: '#ff9c6e',
-          },
-          {
-            icon: 'coffee',
-            title: '休息一下',
-            link: '',
-            color: '#95de64',
-          },
-        ],
       }
     },
     beforeDestroy() {
