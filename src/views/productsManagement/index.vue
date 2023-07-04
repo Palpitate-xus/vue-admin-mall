@@ -4,24 +4,33 @@
       <vab-query-form-left-panel :span="12">
         <el-upload
           accept=".xlsx"
-          action="https://jsonplaceholder.typicode.com/posts/"
+          action="http://localhost:8000/api/suppliers/excel_product"
           :before-remove="beforeRemove"
           :file-list="fileList"
+          :headers="myHeaders"
           :limit="1"
           multiple
           :on-exceed="handleExceed"
           :on-preview="handlePreview"
           :on-remove="handleRemove"
+          :on-success="handleSuccess"
         >
           <el-button
             v-permissions="'[supplier]'"
             icon="el-icon-plus"
             type="primary"
           >
-            添加
+            从xlsx文件添加
           </el-button>
-          <div slot="tip" class="el-upload__tip">只能上传xlsx文件</div>
         </el-upload>
+        <el-button
+          v-permissions="'[supplier]'"
+          icon="el-icon-plus"
+          type="primary"
+          @click="dialogVisible = true"
+        >
+          添加商品
+        </el-button>
       </vab-query-form-left-panel>
       <vab-query-form-right-panel :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>
@@ -77,15 +86,12 @@
         prop="product_image"
         show-overflow-tooltip
       ></el-table-column>
-      <el-table-column
-        label="商品状态"
-        prop="product_status"
-        show-overflow-tooltip
-      ></el-table-column>
-      <el-table-column label="权限" show-overflow-tooltip>
+      <el-table-column label="商品状态" show-overflow-tooltip>
         <template #default="{ row }">
-          <el-tag v-for="(item, index) in row.permissions" :key="index">
-            {{ item }}
+          <el-tag
+            :type="row.product_status === 'active' ? 'success' : 'warning'"
+          >
+            {{ row.product_status === 'active' ? '上架中' : '已下架' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -95,12 +101,15 @@
           <el-button
             v-if="row.product_status === 'active'"
             plain
-            type="danger"
+            type="warning"
             @click="handleDelete(row)"
           >
             下架
           </el-button>
           <el-button v-else plain @click="handleOnShelf(row)">上架</el-button>
+          <el-button type="danger" @click="handleRemoveProduct(row)">
+            删除商品
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -113,12 +122,44 @@
       @current-change="handleCurrentChange"
       @size-change="handleSizeChange"
     ></el-pagination>
+    <el-dialog title="添加商品" :visible.sync="dialogVisible" width="50%">
+      <el-form :model="formData">
+        <el-form-item label="商品名称">
+          <el-input v-model="formData.product_name"></el-input>
+        </el-form-item>
+        <el-form-item label="商品描述">
+          <el-input v-model="formData.product_description"></el-input>
+        </el-form-item>
+        <el-form-item label="商品分类">
+          <el-input v-model="formData.category"></el-input>
+        </el-form-item>
+        <el-form-item label="商品价格">
+          <el-input v-model="formData.product_price"></el-input>
+        </el-form-item>
+        <el-form-item label="商品图片">
+          <el-input v-model="formData.product_image"></el-input>
+        </el-form-item>
+        <el-form-item label="库存数量">
+          <el-input v-model="formData.stock_quantity"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit">提交</el-button>
+          <el-button @click="dialogVisible = false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-  import { getList, offshelf, onshelf } from '@/api/productsManagement'
-
+  import {
+    getList,
+    offshelf,
+    onshelf,
+    remove,
+    addProduct,
+  } from '@/api/productsManagement'
+  import { getAccessToken } from '@/utils/accessToken'
   export default {
     name: 'ProductsManagement',
     data() {
@@ -129,18 +170,39 @@
         layout: 'total, sizes, prev, pager, next, jumper',
         total: 0,
         selectRows: '',
+        dialogVisible: false,
         elementLoadingText: '正在加载...',
+        token: '',
+        myHeaders: {},
         queryForm: {
           pageNo: 1,
           pageSize: 10,
           username: '',
         },
+        formData: {
+          product_name: '',
+          product_price: '',
+          product_image: '',
+          product_description: '',
+          stock_quantity: '',
+          category: '',
+        },
       }
     },
     created() {
       this.fetchData()
+      this.token = getAccessToken()
+      this.myHeaders.Authorization = this.token
+      console.log(this.myHeaders.Authorization)
     },
     methods: {
+      async handleRemoveProduct(item) {
+        const { message } = await remove({
+          product_id: item.product_id,
+        })
+        this.$baseMessage(message, 'success')
+        this.fetchData()
+      },
       handleRemove(file, fileList) {
         console.log(file, fileList)
       },
@@ -167,6 +229,25 @@
       //     this.$refs['edit'].showEdit()
       //   }
       // },
+      async onSubmit() {
+        console.log(this.formData)
+        const { message } = await addProduct(this.formData)
+        this.$baseMessage(message, 'success')
+        this.fetchData()
+        this.dialogVisible = false
+        this.formData = {
+          product_name: '',
+          product_price: '',
+          product_image: '',
+          product_description: '',
+          stock_quantity: '',
+          category: '',
+        }
+      },
+      handleSuccess(response, file, fileList) {
+        this.$baseMessage(response.message, 'success')
+        this.fetchData()
+      },
       async handleDelete(row) {
         if (row.product_id) {
           this.$baseConfirm('你确定要下架当前项吗', null, async () => {
