@@ -32,22 +32,6 @@
           添加商品
         </el-button>
       </vab-query-form-left-panel>
-      <vab-query-form-right-panel :span="12">
-        <el-form :inline="true" :model="queryForm" @submit.native.prevent>
-          <el-form-item>
-            <el-input
-              v-model.trim="queryForm.username"
-              clearable
-              placeholder="请输入商品名称"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-button icon="el-icon-search" type="primary" @click="queryData">
-              查询
-            </el-button>
-          </el-form-item>
-        </el-form>
-      </vab-query-form-right-panel>
     </vab-query-form>
 
     <el-table
@@ -60,6 +44,7 @@
         label="id"
         prop="product_id"
         show-overflow-tooltip
+        width="50px"
       ></el-table-column>
       <el-table-column
         label="商品名称"
@@ -95,9 +80,8 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" show-overflow-tooltip width="200">
+      <el-table-column label="操作" show-overflow-tooltip width="200px">
         <template #default="{ row }">
-          <!-- <el-button type="text" @click="handleEdit(row)">编辑</el-button> -->
           <el-button
             v-if="row.product_status === 'active'"
             plain
@@ -109,6 +93,16 @@
           <el-button v-else plain @click="handleOnShelf(row)">上架</el-button>
           <el-button type="danger" @click="handleRemoveProduct(row)">
             删除商品
+          </el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="商品操作" show-overflow-tooltip width="200px">
+        <template #default="{ row }">
+          <el-button type="primary" @click="handleEdit(row)">
+            编辑商品
+          </el-button>
+          <el-button type="primary" @click="handleInventory(row)">
+            修改库存
           </el-button>
         </template>
       </el-table-column>
@@ -144,7 +138,50 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit">提交</el-button>
-          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button @click="editDialogVisible = false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <el-dialog title="商品编辑" :visible.sync="editDialogVisible" width="50%">
+      <el-form :model="formData">
+        <el-form-item label="商品名称">
+          <el-input v-model="formData.product_name"></el-input>
+        </el-form-item>
+        <el-form-item label="商品描述">
+          <el-input v-model="formData.product_description"></el-input>
+        </el-form-item>
+        <el-form-item label="商品分类">
+          <el-input v-model="formData.category"></el-input>
+        </el-form-item>
+        <el-form-item label="商品价格">
+          <el-input v-model="formData.product_price"></el-input>
+        </el-form-item>
+        <el-form-item label="商品图片">
+          <el-input v-model="formData.product_image"></el-input>
+        </el-form-item>
+        <!-- <el-form-item label="库存数量">
+          <el-input v-model="formData.stock_quantity"></el-input>
+        </el-form-item> -->
+        <el-form-item>
+          <el-button type="primary" @click="handleEditProduct">提交</el-button>
+          <el-button @click="editDialogVisible = false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <el-dialog
+      title="库存修改"
+      :visible.sync="quantityDialogVisible"
+      width="50%"
+    >
+      <el-form :model="formData">
+        <el-form-item label="库存变化数量">
+          <el-input-number v-model="inventory"></el-input-number>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleEditInventory">
+            提交
+          </el-button>
+          <el-button @click="quantityDialogVisible = false">取消</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -158,6 +195,8 @@
     onshelf,
     remove,
     addProduct,
+    editProduct,
+    editInventory,
   } from '@/api/productsManagement'
   import { getAccessToken } from '@/utils/accessToken'
   export default {
@@ -171,7 +210,10 @@
         total: 0,
         selectRows: '',
         dialogVisible: false,
+        editDialogVisible: false,
+        quantityDialogVisible: false,
         elementLoadingText: '正在加载...',
+        inventory: 0,
         token: '',
         myHeaders: {},
         queryForm: {
@@ -296,6 +338,31 @@
         setTimeout(() => {
           this.listLoading = false
         }, 300)
+      },
+      handleEdit(row) {
+        this.formData = row
+        this.editDialogVisible = true
+        console.log(row)
+      },
+      handleInventory(row) {
+        this.formData = row
+        this.quantityDialogVisible = true
+        console.log(row)
+      },
+      async handleEditProduct() {
+        this.editDialogVisible = false
+        const { message } = await editProduct(this.formData)
+        this.$baseMessage(message, 'success')
+        this.fetchData()
+      },
+      async handleEditInventory() {
+        this.quantityDialogVisible = false
+        const { message } = await editInventory({
+          product_id: this.formData.product_id,
+          stock_quantity: this.inventory,
+        })
+        this.$baseMessage(message, 'success')
+        this.fetchData()
       },
     },
   }
