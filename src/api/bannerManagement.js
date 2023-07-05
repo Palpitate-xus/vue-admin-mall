@@ -1,8 +1,9 @@
 import request from '@/utils/request'
 
-export function getNoticeList() {
+export function getBannerList(data) {
   return request({
-    url: '/notice/getList',
+    url: '/store/banner/',
     method: 'post',
+    data,
   })
 }
