@@ -38,12 +38,14 @@
           </div>
           <el-timeline :reverse="reverse">
             <el-timeline-item
-              v-for="(activity, index) in activities"
+              v-for="(order, index) in orders"
               :key="index"
-              :color="activity.color"
-              :timestamp="activity.timestamp"
+              :timestamp="order.order_time"
             >
-              {{ activity.content }}
+              {{ order.supplyorder_id }}
+              <el-tag :type="getResult(order.order_status).type">
+                {{ getResult(order.order_status).label }}
+              </el-tag>
             </el-timeline-item>
           </el-timeline>
         </el-card>
@@ -55,8 +57,8 @@
 <script>
   import VabChart from '@/plugins/echarts'
   import { dependencies, devDependencies } from '../../../package.json'
-  import { getList } from '@/api/changeLog'
   import { getStatistics } from '@/api/statistics'
+  import { getList } from '../../api/orderManagement'
 
   export default {
     name: 'Index',
@@ -66,10 +68,7 @@
     data() {
       return {
         timer: 0,
-        updateTime: process.env.VUE_APP_UPDATE_TIME,
-        nodeEnv: process.env.NODE_ENV,
-        dependencies: dependencies,
-        devDependencies: devDependencies,
+        orders: [],
         config1: {
           startVal: 0,
           endVal: this.$baseLodash.random(20000, 60000),
@@ -88,16 +87,6 @@
           separator: ',',
           duration: 8000,
         },
-        config3: {
-          startVal: 0,
-          endVal: this.$baseLodash.random(1000, 20000),
-          decimals: 0,
-          prefix: '',
-          suffix: '',
-          separator: ',',
-          duration: 8000,
-        },
-
         //营业额
         fwl: {
           color: [
@@ -162,7 +151,6 @@
           xAxis: [
             {
               type: 'category',
-              /*boundaryGap: false,*/
               data: ['0时', '4时', '8时', '12时', '16时', '20时', '24时'],
               axisTick: {
                 alignWithLabel: true,
@@ -186,8 +174,6 @@
         reverse: true,
         activities: [],
         noticeList: [],
-        //其他信息
-        userAgent: navigator.userAgent,
       }
     },
     beforeDestroy() {
@@ -230,7 +216,22 @@
     methods: {
       async fetchData() {
         const { data } = await getStatistics()
+        const response = await getList()
+        this.orders = response.data.supplier_orders
         console.log(data)
+      },
+      getResult(item) {
+        console.log(item)
+        switch (item) {
+          case 'Pending':
+            return { label: '待处理', type: 'warning' }
+          case 'shipped':
+            return { label: '已发货', type: 'info' }
+          case 'Finished':
+            return { label: '已完成', type: 'success' }
+          default:
+            return { label: '订单信息获取错误', type: 'danger' }
+        }
       },
     },
   }
