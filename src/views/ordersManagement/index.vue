@@ -28,7 +28,14 @@
       <el-table-column label="操作" show-overflow-tooltip width="200">
         <template #default="{ row }">
           <el-button plain @click="viewOrder(row)">查看详情</el-button>
-          <el-button plain @click="handleAccept(row)">接受订单</el-button>
+          <el-button
+            v-if="row.order_status === 'Pending'"
+            plain
+            type="primary"
+            @click="handleAccept(row)"
+          >
+            接受订单
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
