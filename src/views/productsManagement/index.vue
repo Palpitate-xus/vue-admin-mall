@@ -16,7 +16,7 @@
           :on-success="handleSuccess"
         >
           <el-button
-            v-permissions="'[supplier]'"
+            v-permissions="['supplier']"
             icon="el-icon-plus"
             type="primary"
           >
@@ -24,7 +24,7 @@
           </el-button>
         </el-upload>
         <el-button
-          v-permissions="'[supplier]'"
+          v-permissions="['supplier']"
           icon="el-icon-plus"
           type="primary"
           @click="dialogVisible = true"
@@ -91,17 +91,34 @@
             下架
           </el-button>
           <el-button v-else plain @click="handleOnShelf(row)">上架</el-button>
-          <el-button type="danger" @click="handleRemoveProduct(row)">
+          <el-button
+            v-permissions="['supplier']"
+            type="danger"
+            @click="handleRemoveProduct(row)"
+          >
             删除商品
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="商品操作" show-overflow-tooltip width="200px">
+      <el-table-column
+        v-permissions="['supplier']"
+        label="商品操作"
+        show-overflow-tooltip
+        width="200px"
+      >
         <template #default="{ row }">
-          <el-button type="primary" @click="handleEdit(row)">
+          <el-button
+            v-permissions="['supplier']"
+            type="primary"
+            @click="handleEdit(row)"
+          >
             编辑商品
           </el-button>
-          <el-button type="primary" @click="handleInventory(row)">
+          <el-button
+            v-permissions="['supplier']"
+            type="primary"
+            @click="handleInventory(row)"
+          >
             修改库存
           </el-button>
         </template>
