@@ -35,12 +35,9 @@
     <br />
     <br />
     <el-divider content-position="left">
-      all模式,路由以及view文件引入全部交给后端(权限复杂,且随时变更,建议使用此方案)
+      all模式,路由以及view文件引入全部交给后端
     </el-divider>
-    <p>
-      settings.js配置authentication为all即可完全交由后端控制,mock中有后端接口示例,权限繁琐,有几十种权限的项目直接用这种,
-      由于演示环境是mock数据模拟,可能无法展现此功能的配置,只做如下展示,便于您的理解
-    </p>
+    <p>settings.js配置authentication为all即可完全交由后端控制</p>
     <br />
     <el-row :gutter="20">
       <el-col :lg="12" :md="12" :sm="24" :xl="12" :xs="24">

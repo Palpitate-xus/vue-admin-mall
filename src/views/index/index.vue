@@ -2,7 +2,7 @@
   <div class="index-container">
     <el-row :gutter="20">
       <el-col :lg="6" :md="12" :sm="24" :xl="6" :xs="24">
-        <el-card shadow="never">
+        <el-card v-permissions="['admin']" shadow="never">
           <div slot="header">
             <span>营业额</span>
           </div>
@@ -17,7 +17,7 @@
         </el-card>
       </el-col>
       <el-col :lg="6" :md="12" :sm="24" :xl="6" :xs="24">
-        <el-card shadow="never">
+        <el-card v-permissions="['admin']" shadow="never">
           <div slot="header">
             <span>订单量</span>
           </div>
@@ -56,9 +56,9 @@
 
 <script>
   import VabChart from '@/plugins/echarts'
-  import { dependencies, devDependencies } from '../../../package.json'
   import { getStatistics } from '@/api/statistics'
   import { getList } from '../../api/orderManagement'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: 'Index',
@@ -176,12 +176,18 @@
         noticeList: [],
       }
     },
+    computed: {
+      ...mapGetters({
+        username: 'user/username',
+        permissions: 'user/permissions',
+      }),
+    },
     beforeDestroy() {
       clearInterval(this.timer)
     },
     mounted() {
       this.fetchData()
-      let base = +new Date(2020, 1, 1)
+      let base = +new Date(2023, 7, 3)
       let oneDay = 24 * 3600 * 1000
       let date = []
 
