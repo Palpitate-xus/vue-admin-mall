@@ -39,3 +39,19 @@ export function addProduct(data) {
     data,
   })
 }
+
+export function editProduct(data) {
+  return request({
+    url: '/store/edit_product/',
+    method: 'post',
+    data,
+  })
+}
+
+export function editInventory(data) {
+  return request({
+    url: '/suppliers/inventory_management/',
+    method: 'post',
+    data,
+  })
+}
