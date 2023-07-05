@@ -2,37 +2,44 @@
   <div class="index-container">
     <el-row :gutter="20">
       <el-col :lg="6" :md="12" :sm="24" :xl="6" :xs="24">
-        <el-card v-permissions="['admin']" shadow="never">
+        <el-card v-permissions="['admin']">
           <div slot="header">
-            <span>营业额</span>
+            <span>销售统计</span>
           </div>
-          <vab-chart autoresize :option="fwl" />
-          <div class="bottom">
-            <span>
-              日均营业额:
-
-              {{ config1.endVal }}
-            </span>
-          </div>
+          <el-timeline :reverse="reverse">
+            <el-timeline-item
+              v-for="(dayStatistics, index) in statistics"
+              :key="index"
+              :timestamp="dayStatistics.date"
+            >
+              <!-- 日订单量：{{ dayStatistics.ordercount }} 日销售额:
+              {{ dayStatistics.total_amount }} -->
+              <el-row :gutter="20">
+                <el-col :span="6">
+                  <div>
+                    <el-statistic title="日订单量">
+                      <template slot="formatter">
+                        {{ dayStatistics.ordercount }}
+                      </template>
+                    </el-statistic>
+                  </div>
+                </el-col>
+                <el-col :span="6">
+                  <div>
+                    <el-statistic title="日销售额">
+                      <template slot="formatter">
+                        {{ dayStatistics.total_amount }}
+                      </template>
+                    </el-statistic>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-timeline-item>
+          </el-timeline>
         </el-card>
       </el-col>
-      <el-col :lg="6" :md="12" :sm="24" :xl="6" :xs="24">
-        <el-card v-permissions="['admin']" shadow="never">
-          <div slot="header">
-            <span>订单量</span>
-          </div>
-          <vab-chart autoresize :option="sqs" />
-          <div class="bottom">
-            <span>
-              总订单量:
-              {{ config2.endVal }}
-            </span>
-          </div>
-        </el-card>
-      </el-col>
-
       <el-col :lg="13" :md="13" :sm="24" :xl="13" :xs="24">
-        <el-card class="card" shadow="never">
+        <el-card v-permissions="['supplier']" class="card">
           <div slot="header">
             <span>最新订单</span>
           </div>
@@ -55,20 +62,17 @@
 </template>
 
 <script>
-  import VabChart from '@/plugins/echarts'
   import { getStatistics } from '@/api/statistics'
   import { getList } from '../../api/orderManagement'
   import { mapGetters } from 'vuex'
 
   export default {
     name: 'Index',
-    components: {
-      VabChart,
-    },
     data() {
       return {
         timer: 0,
         orders: [],
+        statistics: [],
         config1: {
           startVal: 0,
           endVal: this.$baseLodash.random(20000, 60000),
@@ -222,6 +226,7 @@
     methods: {
       async fetchData() {
         const { data } = await getStatistics()
+        this.statistics = data.statistics
         const response = await getList()
         this.orders = response.data.supplier_orders
         console.log(data)
