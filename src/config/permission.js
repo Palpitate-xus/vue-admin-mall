@@ -1,6 +1,6 @@
 /**
 
- * @description 路由守卫，目前两种模式：all模式与intelligence模式
+ * @description 路由守卫
  */
 import router from '@/router'
 import store from '@/store'

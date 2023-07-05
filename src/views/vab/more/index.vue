@@ -29,21 +29,6 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :lg="8" :md="24" :sm="24" :xl="8" :xs="24">
-        <el-card>
-          <div slot="header">
-            VIP群
-            <el-button style="float: right; padding: 3px 0" type="text">
-              ￥100（2021年1月起不再提供此服务）
-            </el-button>
-          </div>
-          <div>
-            <ul>
-              <li>为避免引起误解，不再针对开源用户提供付费vip群</li>
-            </ul>
-          </div>
-        </el-card>
-      </el-col>
     </el-row>
   </div>
 </template>

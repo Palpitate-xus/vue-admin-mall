@@ -2,7 +2,7 @@
  * @description 导出默认网路配置
  **/
 const network = {
-  // 默认的接口地址 如果是开发环境和生产环境走vab-mock-server，当然你也可以选择自己配置成需要的接口地址
+  // 默认的接口地址 如果是开发环境和生产环境走vab-mock-server
   // ? 'http://localhost:8000/api/'
   baseURL:
     process.env.NODE_ENV === 'development'
