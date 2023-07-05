@@ -56,7 +56,7 @@
   import VabChart from '@/plugins/echarts'
   import { dependencies, devDependencies } from '../../../package.json'
   import { getList } from '@/api/changeLog'
-  import { getNoticeList } from '@/api/notice'
+  import { getStatistics } from '@/api/statistics'
 
   export default {
     name: 'Index',
@@ -183,142 +183,6 @@
             },
           ],
         },
-        //词云
-        cy: {
-          grid: {
-            top: '4%',
-            left: '2%',
-            right: '4%',
-            bottom: '0%',
-          },
-          series: [
-            {
-              type: 'wordCloud',
-              gridSize: 15,
-              sizeRange: [12, 40],
-              rotationRange: [0, 0],
-              width: '100%',
-              height: '100%',
-              textStyle: {
-                normal: {
-                  color() {
-                    const arr = [
-                      '#5470c6',
-                      '#91cc75',
-                      '#fac858',
-                      '#ee6666',
-                      '#73c0de',
-                      '#975FE5',
-                    ]
-                    let index = Math.floor(Math.random() * arr.length)
-                    return arr[index]
-                  },
-                },
-              },
-              data: [
-                {
-                  name: 'vue-admin-better',
-                  value: 15000,
-                },
-                {
-                  name: 'element',
-                  value: 10081,
-                },
-                {
-                  name: 'beautiful',
-                  value: 9386,
-                },
-
-                {
-                  name: 'vue',
-                  value: 6500,
-                },
-                {
-                  name: 'chuzhixin',
-                  value: 6000,
-                },
-                {
-                  name: 'good',
-                  value: 4500,
-                },
-                {
-                  name: 'success',
-                  value: 3800,
-                },
-                {
-                  name: 'never',
-                  value: 3000,
-                },
-                {
-                  name: 'boy',
-                  value: 2500,
-                },
-                {
-                  name: 'girl',
-                  value: 2300,
-                },
-                {
-                  name: 'github',
-                  value: 2000,
-                },
-                {
-                  name: 'hbuilder',
-                  value: 1900,
-                },
-                {
-                  name: 'dcloud',
-                  value: 1800,
-                },
-                {
-                  name: 'china',
-                  value: 1700,
-                },
-                {
-                  name: '1204505056',
-                  value: 1600,
-                },
-                {
-                  name: '972435319',
-                  value: 1500,
-                },
-                {
-                  name: 'young',
-                  value: 1200,
-                },
-                {
-                  name: 'old',
-                  value: 1100,
-                },
-                {
-                  name: 'vuex',
-                  value: 900,
-                },
-                {
-                  name: 'router',
-                  value: 800,
-                },
-                {
-                  name: 'money',
-                  value: 700,
-                },
-                {
-                  name: 'qingdao',
-                  value: 800,
-                },
-                {
-                  name: 'yantai',
-                  value: 9000,
-                },
-                {
-                  name: 'author is very cool',
-                  value: 9200,
-                },
-              ],
-            },
-          ],
-        },
-
-        //更新日志
         reverse: true,
         activities: [],
         noticeList: [],
@@ -330,6 +194,7 @@
       clearInterval(this.timer)
     },
     mounted() {
+      this.fetchData()
       let base = +new Date(2020, 1, 1)
       let oneDay = 24 * 3600 * 1000
       let date = []
@@ -363,36 +228,9 @@
       }, 3000)
     },
     methods: {
-      handleClick(e) {
-        this.$baseMessage(`点击了${e.name},这里可以写跳转`)
-      },
-      handleZrClick(e) {},
-      handleChangeTheme() {
-        this.$baseEventBus.$emit('theme')
-      },
       async fetchData() {
-        const { data } = await getList()
-        data.map((item, index) => {
-          if (index === data.length - 1) {
-            item.color = '#0bbd87'
-          }
-        })
-        this.activities = data
-        const res = await getNoticeList()
-        this.noticeList = res.data
-        /* getRepos({
-      token: "1061286824f978ea3cf98b7b8ea26fe27ba7cea1",
-    }).then((res) => {
-      const per_page = Math.ceil(res.data.stargazers_count / 100);
-      alert(per_page);
-      getStargazers({
-        token: "1061286824f978ea3cf98b7b8ea26fe27ba7cea1",
-        page: 1,
-        per_page: res.per_page,
-      }).then((res) => {
-        alert(JSON.stringify(res));
-      });
-    }); */
+        const { data } = await getStatistics()
+        console.log(data)
       },
     },
   }
