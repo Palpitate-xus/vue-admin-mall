@@ -4,7 +4,7 @@
       <vab-query-form-left-panel :span="12">
         <el-upload
           accept=".xlsx"
-          action="http://localhost:8000/api/suppliers/excel_product"
+          action="http://mall.iyigui.cn:8000/api/suppliers/excel_product"
           :before-remove="beforeRemove"
           :file-list="fileList"
           :headers="myHeaders"
@@ -371,6 +371,14 @@
         const { message } = await editProduct(this.formData)
         this.$baseMessage(message, 'success')
         this.fetchData()
+        this.formData = {
+          product_name: '',
+          product_price: '',
+          product_image: '',
+          product_description: '',
+          stock_quantity: '',
+          category: '',
+        }
       },
       async handleEditInventory() {
         this.quantityDialogVisible = false
@@ -380,6 +388,7 @@
         })
         this.$baseMessage(message, 'success')
         this.fetchData()
+        this.inventory = 0
       },
     },
   }

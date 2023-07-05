@@ -234,11 +234,11 @@
       getResult(item) {
         console.log(item)
         switch (item) {
-          case 'Pending':
+          case 'Has paid':
             return { label: '待处理', type: 'warning' }
           case 'shipped':
             return { label: '已发货', type: 'info' }
-          case 'Finished':
+          case 'Accepted':
             return { label: '已完成', type: 'success' }
           default:
             return { label: '订单信息获取错误', type: 'danger' }

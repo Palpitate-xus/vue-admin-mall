@@ -14,9 +14,9 @@
       <el-table-column label="订单状态" show-overflow-tooltip>
         <template #default="{ row }">
           <el-tag
-            :type="row.order_status === 'Pending' ? 'warning' : 'success'"
+            :type="row.order_status === 'shipped' ? 'warning' : 'success'"
           >
-            {{ row.order_status === 'Pending' ? '待处理' : '已发货' }}
+            {{ row.order_status === 'shipped' ? '已发货' : '待处理' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -29,7 +29,7 @@
         <template #default="{ row }">
           <el-button plain @click="viewOrder(row)">查看详情</el-button>
           <el-button
-            v-if="row.order_status === 'Pending'"
+            v-if="row.order_status === 'Has paid'"
             plain
             type="primary"
             @click="handleAccept(row)"
